@@ -1,0 +1,21 @@
+// Запуск F5 собирает расширение и открывает отдельное окно для проверки.
+// type extensionHost включает отладку расширения.
+// workspaceFolder — открытая папка с package.json этого проекта.
+// preLaunchTask запускает задачу сборки; outFiles указывает результат esbuild.
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Run Extension",
+			"type": "extensionHost",
+			"request": "launch",
+			"args": [
+				"--extensionDevelopmentPath=${workspaceFolder}"
+			],
+			"outFiles": [
+				"${workspaceFolder}/dist/**/*.js"
+			],
+			"preLaunchTask": "${defaultBuildTask}"
+		}
+	]
+}

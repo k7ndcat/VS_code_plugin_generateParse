@@ -1,0 +1,13 @@
+// Локальные настройки редактора для этого проекта.
+{
+    "files.exclude": {
+        "out": false, // true скроет папку out в Explorer.
+        "dist": false // true скроет папку dist в Explorer.
+    },
+    "search.exclude": {
+        "out": true, // false включит out в результаты поиска.
+        "dist": true // false включит dist в результаты поиска.
+    },
+    // Отключаем поиск tsc-задач: нужные задачи уже заданы через npm.
+    "js/ts.tsc.autoDetect": "off"
+}

@@ -1,0 +1,5 @@
+{
+  // Рекомендованные расширения для разработчика этого проекта.
+  // ESLint, обработчик сообщений esbuild и интерфейс запуска тестов.
+  "recommendations": ["dbaeumer.vscode-eslint", "connor4312.esbuild-problem-matchers", "ms-vscode.extension-test-runner"]
+}
