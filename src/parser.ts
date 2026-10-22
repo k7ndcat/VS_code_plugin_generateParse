@@ -1,7 +1,6 @@
 import { Declaration } from './model';
 import { isValidName } from './names';
 
-/** Формат: имя тип; имя тип[размер]. Любая неверная схема даёт одну ошибку. */
 export function parseSchema(schema: string): Declaration[] {
     // Сначала получаем отдельные записи; внутренние пустые записи не удаляем  ['n int', ' a int[n]']
     const records = schema.trim().split(';'); // Делим именно по ;, пробелы вокруг записи убираем отдельно.
@@ -21,9 +20,6 @@ export function parseSchema(schema: string): Declaration[] {
         const typeParts = parts[1].split('[');
         const type = typeParts[0];
         
-        //name      = "a"
-        //typeParts = ["int", "n]"]
-        //type      = "int"
 
         if (!isValidName(name) || declared.has(name)) {
             throw new Error('Ошибка ввода');
@@ -32,7 +28,7 @@ export function parseSchema(schema: string): Declaration[] {
             throw new Error('Ошибка ввода');
         }
 
-        let declaration: Declaration;
+        let declaration: Declaration; // создает новую пустую
         if (typeParts.length === 1) {
             declaration = { kind: 'scalar', name, type };
         } else {

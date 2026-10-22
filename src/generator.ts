@@ -49,8 +49,7 @@ export function generateCpp(declarations: readonly Declaration[]): string {
         }
     }
 
-    // Соединяем заранее готовые include, main и блок ввода.
-    // \n в исходнике TypeScript обозначает перенос строки в готовом тексте C++.
+   
     return includes +
         '\n\nint main() {\n' + lines.join('\n') +
         '\n    return 0;\n}\n';
