@@ -4,7 +4,7 @@ import { isValidName } from './names';
 /** Формат: имя тип; имя тип[размер]. Любая неверная схема даёт одну ошибку. */
 export function parseSchema(schema: string): Declaration[] {
     // Сначала получаем отдельные записи; внутренние пустые записи не удаляем  ['n int', ' a int[n]']
-    const records = schema.trim().split(';'); //проверка на дурака, забывшего пробел
+    const records = schema.trim().split(';'); // Делим именно по ;, пробелы вокруг записи убираем отдельно.
     if (records.length > 1 && records[records.length - 1].trim() === '') {
         records.pop(); // Разрешаем одну завершающую точку с запятой.
     }

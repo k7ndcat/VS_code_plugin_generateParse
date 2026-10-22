@@ -20,3 +20,9 @@ node_modules
 # Логи и служебные файлы macOS
 *.log
 .DS_Store
+
+# В Git включаем готовый пакет релиза, а отчёты оставляем локально.
+!releases/*.vsix
+/reports/
+*.docx
+*.pdf

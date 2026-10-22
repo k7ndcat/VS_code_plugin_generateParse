@@ -11,8 +11,18 @@ const CPP_TYPES: Record<InputType, string> = {
 
 /** Создаёт C++17 из проверенной схемы; входные значения программы считаются корректными. */
 export function generateCpp(declarations: readonly Declaration[]): string {
-    // Set хранит уникальные значения: один заголовок не добавится дважды.
-    const headers = new Set<string>(['iostream']);
+    // Отдельный проход: собираем зависимости до генерации программы.
+    const headers: string[] = ['iostream'];
+    for (const declaration of declarations) {
+        if (declaration.type === 'string' && !headers.includes('string')) {
+            headers.push('string');
+        }
+        if (declaration.kind === 'array' && !headers.includes('vector')) {
+            headers.push('vector');
+        }
+    }
+    // Все include готовы заранее; в цикле генерации их больше не меняем.
+    const includes = headers.map(header => `#include <${header}>`).join('\n');
     // возвращает массив всех имен, повторения уберутся
     const usedNames = new Set(declarations.map(declaration => declaration.name));
     const lines: string[] = [];
@@ -21,14 +31,9 @@ export function generateCpp(declarations: readonly Declaration[]): string {
     for (const declaration of declarations) {
         const { name, type } = declaration;
         const cppType = CPP_TYPES[type];
-        if (type === 'string') {
-            headers.add('string');
-        }
-
         if (declaration.kind === 'scalar') {
             lines.push(`    ${cppType} ${name};`, `    std::cin >> ${name};`, '');
         } else {
-            headers.add('vector');
             let index: string;
             // Пробуем i0, i1, ... до первого свободного имени счётчика., делаем do чтобы индекс сам обновился
             do {
@@ -44,9 +49,9 @@ export function generateCpp(declarations: readonly Declaration[]): string {
         }
     }
 
-    // Сначала заголовки, затем main и ввод, в конце — место для алгоритма.
+    // Соединяем заранее готовые include, main и блок ввода.
     // \n в исходнике TypeScript обозначает перенос строки в готовом тексте C++.
-    return [...headers].map(header => `#include <${header}>`).join('\n') +
+    return includes +
         '\n\nint main() {\n' + lines.join('\n') +
-        '\n    // TODO: напиши алгоритм задачи здесь.\n\n    return 0;\n}\n';
+        '\n    return 0;\n}\n';
 }

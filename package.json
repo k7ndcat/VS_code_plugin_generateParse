@@ -2,9 +2,9 @@
   "name": "input-code-generator",
   "displayName": "Input Code Generator",
   "description": "Generate C++ input code from a schema",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
-    "vscode": "^1.100.0"
+    "vscode": "^1.140.0"
   },
   "categories": [
     "Other"
@@ -16,6 +16,13 @@
       {
         "command": "inputGenerator.generate",
         "title": "Input Generator: Generate C++ Input"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "inputGenerator.generate",
+        "key": "ctrl+shift+[Slash] [KeyG]",
+        "mac": "cmd+shift+[Slash] [KeyG]"
       }
     ]
   },
@@ -49,5 +56,9 @@
   "overrides": {
     "diff": "^8.0.4",
     "serialize-javascript": "^7.0.6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/k7ndcat/VS_code_plugin_generateParse.git"
   }
 }

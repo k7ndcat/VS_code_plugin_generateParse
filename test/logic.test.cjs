@@ -10,6 +10,14 @@ const { parseSchema } = require('../out/parser');
 const { generateCpp } = require('../out/generator');
 const { CPP_KEYWORDS, SERVICE_NAMES } = require('../out/names');
 
+test('Манифест связывает команду с новой последовательностью клавиш', () => {
+    const manifest = require('../package.json');
+    const binding = manifest.contributes.keybindings.find(item => item.command === 'inputGenerator.generate');
+    assert.ok(manifest.contributes.commands.some(item => item.command === binding.command));
+    assert.equal(binding.mac, 'cmd+shift+[Slash] [KeyG]');
+    assert.equal(binding.key, 'ctrl+shift+[Slash] [KeyG]');
+});
+
 test('Простой разбор сохраняет типы, размер и порядок', () => {
     assert.deepEqual(parseSchema('n int; a int[n]; x double; word string'), [
         { kind: 'scalar', name: 'n', type: 'int' },
@@ -45,6 +53,10 @@ test('Все ключевые слова и служебные имена зап
 test('Заголовки минимальны и не повторяются, индексы не конфликтуют с именами', () => {
     const scalar = generateCpp(parseSchema('x int;y double'));
     assert.deepEqual(scalar.match(/#include <[^>]+>/g), ['#include <iostream>']);
+    const arrays = generateCpp(parseSchema('n int;a int[n];b double[n]'));
+    assert.deepEqual(arrays.match(/#include <[^>]+>/g), ['#include <iostream>', '#include <vector>']);
+    const strings = generateCpp(parseSchema('a string;b string'));
+    assert.deepEqual(strings.match(/#include <[^>]+>/g), ['#include <iostream>', '#include <string>']);
     const code = generateCpp(parseSchema('n int;a string[n];i0 int;i1 int;b double[n]'));
     assert.deepEqual(code.match(/#include <[^>]+>/g), [
         '#include <iostream>', '#include <string>', '#include <vector>'
@@ -52,6 +64,8 @@ test('Заголовки минимальны и не повторяются, и
     assert.match(code, /for \(int i2 = 0;/);
     assert.match(code, /for \(int i3 = 0;/);
     assert.ok(code.indexOf('std::cin >> n') < code.indexOf('std::vector<std::string> a'));
+    assert.ok(code.lastIndexOf('#include') < code.indexOf('int main()'));
+    assert.doesNotMatch(code, /TODO/);
 });
 test('Команда спрашивает один раз: Escape, пустая схема, ошибка, успех', async () => {
     let schema;
@@ -93,7 +107,8 @@ test('Команда спрашивает один раз: Escape, пустая 
     await handler();
     schema = 'n int;a float[n]';
     await handler();
-    assert.deepEqual(errors, ['Ошибка ввода', 'Ошибка ввода']);
+    const message = 'Не удалось создать программу C++. Проверьте схему ввода: n int; a int[n].';
+    assert.deepEqual(errors, [message, message]);
     assert.equal(documents.length, 0);
     schema = 'n int;a int[n]';
     await handler();
@@ -118,7 +133,7 @@ test('Созданный C++17 компилируется и читает чис
         for (const [schema, input, algorithm, expected] of fixtures) {
             const source = path.join(directory, 'solution.cpp');
             const binary = path.join(directory, 'solution');
-            const code = generateCpp(parseSchema(schema)).replace('// TODO: напиши алгоритм задачи здесь.', algorithm);
+            const code = generateCpp(parseSchema(schema)).replace('    return 0;', `    ${algorithm}\n    return 0;`);
             fs.writeFileSync(source, code);
             const build = spawnSync('clang++', ['-std=c++17', '-Wall', '-Wextra', '-Werror', '-pedantic-errors', source, '-o', binary], { encoding: 'utf8' });
             assert.equal(build.status, 0, build.stderr);

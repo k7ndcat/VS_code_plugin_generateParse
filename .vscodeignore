@@ -15,3 +15,8 @@ vsc-extension-quickstart.md
 **/.vscode-test.*
 
 test/**
+
+releases/**
+reports/**
+**/*.docx
+**/*.pdf

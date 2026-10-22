@@ -2,7 +2,6 @@ import * as vscode from 'vscode';
 import { parseSchema } from './parser';
 import { generateCpp } from './generator';
 
-
 export async function generateInput(): Promise<void> {
     try {
         // await ждёт ответа пользователя, не блокируя работу редактора.
@@ -13,7 +12,7 @@ export async function generateInput(): Promise<void> {
             ignoreFocusOut: true
         });
 
-        // Escape lдаёт undefined. Пустую строку после Enter проверит парсер;
+        // Escape даёт undefined. Пустую строку после Enter проверит парсер;
         if (schema === undefined) {
             return;
         }
@@ -30,9 +29,9 @@ export async function generateInput(): Promise<void> {
         await vscode.window.showTextDocument(document);
     } catch {
         await vscode.window.showErrorMessage(
-        'Не удалось создать программу C++. Проверьте схему ввода: n int; a int[n].'
-    );}
-
+            'Не удалось создать программу C++. Проверьте схему ввода: n int; a int[n].'
+        );
+    }
 }
 
 /** VS Code вызывает activate при активации расширения, а не на каждый ввод схемы. */
